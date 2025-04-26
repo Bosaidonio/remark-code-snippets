@@ -4,8 +4,7 @@
   "main": "index.js",
   "scripts": {
     "build": "pnpm -r run build",
-    "changeset": "pnpm changeset",
-    "version-packages": "changeset version",
+    "version-packages": "pnpm changeset && changeset version",
     "release": "changeset publish"
   },
   "keywords": [],
