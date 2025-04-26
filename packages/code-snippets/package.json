@@ -1,6 +1,6 @@
 {
   "name": "@idash/remark-code-snippets",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Bosaidon",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
