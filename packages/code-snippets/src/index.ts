@@ -57,6 +57,8 @@ export default function remarkCodeSnippets(options: RemarkCodeSnippetsOptions = 
             });
         });
 
+        const promises: Promise<void>[] = [];
+
         visit(tree, 'code', (node: any) => {
             if (!node.meta || !node.meta.includes('code={')) return;
 
@@ -141,22 +143,31 @@ export default function remarkCodeSnippets(options: RemarkCodeSnippetsOptions = 
             if (!node.lang) {
                 node.value = codeContent.trim();
             } else {
-                try {
-                    // 根据语言类型确定 parser 和格式化选项
-                    const parser = getParserForLang(node.lang);
-                    const prettierOptions = mergedOptions.prettierOptions || {};
-                    const options = { ...prettierOptions, parser };
+                // 创建一个异步处理格式化的Promise
+                const formatPromise = (async () => {
+                    try {
+                        // 根据语言类型确定 parser 和格式化选项
+                        const parser = getParserForLang(node.lang);
+                        const prettierOptions = mergedOptions.prettierOptions || {};
+                        const options = { ...prettierOptions, parser };
 
-                    // 使用 Prettier 格式化代码
-                    node.value = prettier.format(codeContent.trim(), options);
-                } catch (error) {
-                    console.warn(`格式化代码失败: ${(error as Error).message}. 使用原始代码.`);
-                    node.value = codeContent.trim();
-                }
+                        // 使用 Prettier 格式化代码，正确处理Promise
+                        node.value = await prettier.format(codeContent.trim(), options);
+                    } catch (error) {
+                        console.warn(`格式化代码失败: ${(error as Error).message}. 使用原始代码.`);
+                        node.value = codeContent.trim();
+                    }
+                })();
+
+                // 将所有格式化任务收集起来
+                promises.push(formatPromise);
             }
 
             node.meta = node.meta.replace(/code=\{[^}]+\}\s*/, '').trim();
         });
+
+        // 等待所有格式化任务完成
+        await Promise.all(promises);
     };
 }
 
