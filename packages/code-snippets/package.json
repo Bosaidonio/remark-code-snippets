@@ -1,10 +1,13 @@
 {
-  "name": "remark-code-snippets",
+  "name": "@idash/remark-code-snippets",
   "version": "0.1.0",
   "author": "Bosaidon",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
